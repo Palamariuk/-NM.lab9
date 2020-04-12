@@ -1,8 +1,10 @@
 import numpy as np
+import Parser
+import matplotlib.pyplot as plt
 
 points = [[0.05, 0.54], [0.10, 0.51], [0.17, 0.47],
           [0.25, 0.45], [0.30, 0.42], [0.36, 0.38]]
-
+parser = Parser.Parser([])
 
 # Creating coefficients
 
@@ -21,17 +23,40 @@ def createCoefficients(points, m):
 
 
 # Creating polynoms
-
 def createPolynom(points, m):
     coefficients = createCoefficients(points, m)
-    polynom = "y = "
-    for i in range(len(coefficients)):
-        polynom += "{:.3f} * x^{} + ".format(coefficients[i], i)
-    polynom = polynom[:len(polynom) - 2]
+    yield coefficients
+    parser = Parser.Parser(coefficients)
+    polynom = "y = " + p.get_string()
     print(polynom)
+    
 
 # Executing
+cs = []
+xs = []
+ys = []
 
 createPolynom(points, 1)
 createPolynom(points, 2)
 createPolynom(points, 3)
+
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+ax.spines['left'].set_position('center')
+ax.spines['bottom'].set_position('center')
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+
+for i in range(1, 4):
+    cs.append(createCoefficients(points, i))
+    parser = Parser.Parser(cs[i - 1])
+    x, y = parser.get_tabulation_points()
+    xs.append(x)
+    ys.append(y)
+
+    plt.plot(x, y, 'b')
+    plt.show()
+
+# plt.show() to show all in one page
